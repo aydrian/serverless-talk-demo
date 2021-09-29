@@ -16,3 +16,10 @@ status = 200
 node_bundler = "esbuild"
 # external_node_modules = ["pg"]
 # included_files = ["netlify/certs/*"]
+
+[template.environment]
+PGHOST = "Database Host"
+PGPORT = "Database Port"
+PGDATABASE = "Database name with Cluster"
+PGUSER = "Database SQL User"
+PGPASSWORD = "Database SQL User Password"
