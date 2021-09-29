@@ -1,5 +1,5 @@
 [build]
-command = "make build & npm run deploy"
+command = "make build & npm run build"
 publish = "out"
 
 [[redirects]]
