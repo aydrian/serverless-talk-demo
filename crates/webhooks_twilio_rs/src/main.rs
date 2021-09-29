@@ -9,7 +9,7 @@ use lamedh_http::{
 async fn main(_request: Request, _: Context) -> Result<impl IntoResponse, Error> {
     // TODO: Verify signature
     let twiml = format!(
-        "<Response><Message><Body>{}</Body><Message></Response>",
+        "<Response><Message><Body>{}</Body></Message></Response>",
         "Response from rust"
     );
 
