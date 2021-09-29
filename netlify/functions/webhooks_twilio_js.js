@@ -1,4 +1,5 @@
 import Twilio from "twilio";
+import { URLSearchParams } from "url";
 
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -11,15 +12,18 @@ export async function handler(event, _context) {
     };
   }
 
-  const twilioSignature = event.headers["X-Twilio-Signature"];
+  const twilioSignature = event.headers["x-twilio-signature"];
+  const body = Object.fromEntries(new URLSearchParams(event.body));
+  console.log(twilioSignature);
   if (
-    !Twilio.validateRequestWithBody(
+    !Twilio.validateRequest(
       twilioAuthToken,
       twilioSignature,
       "https://serverless-talk-demo.netlify.app/webhooks/twilio",
-      event.body
+      body
     )
   ) {
+    console.log("Signature verification failed.");
     return {
       statusCode: 422,
       body: "Signature verification failed."
