@@ -1,8 +1,9 @@
 import React from "react";
 import { render } from "react-dom";
+import { ShoutOut } from "./shout-out";
 
 function App() {
-  return <div>Hello {window.username || "World"}</div>;
+  return <ShoutOut image={window.image} username={window.username} />;
 }
 
 render(<App />, document.getElementById("app"));
