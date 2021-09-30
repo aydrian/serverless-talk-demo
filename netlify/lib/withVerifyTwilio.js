@@ -1,5 +1,5 @@
-import { validateRequest } from "twilio";
-import { URLSearchParams } from "url";
+const { validateRequest } = require("twilio");
+const { URLSearchParams } = require("url");
 
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 
@@ -35,4 +35,4 @@ const withVerifyTwilio = (handler) => {
   };
 };
 
-export default withVerifyTwilio;
+module.exports = withVerifyTwilio;

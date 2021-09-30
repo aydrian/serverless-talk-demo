@@ -1,17 +1,17 @@
-import Twilio from "twilio";
-import playwright from "playwright-aws-lambda";
-import fs from "fs";
-import path from "path";
+const Twilio = require("twilio");
+const playwright = require("playwright-aws-lambda");
+const fs = require("fs");
+const path = require("path");
 
-import { v2 as cloudinary } from "cloudinary";
+const cloudinary = require("cloudinary").v2;
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-import withVerifyTwilio from "../lib/withVerifyTwilio";
-import getUserData from "../lib/getUserData";
+const withVerifyTwilio = require("../lib/withVerifyTwilio");
+const getUserData = require("../lib/getUserData");
 
 const script = fs.readFileSync(
   path.resolve(__dirname, "./shout-out-image/image.js"),
@@ -122,4 +122,4 @@ function cloudinaryPromise(shotResult, cloudinary_options) {
   });
 }
 
-export const handler = withVerifyTwilio(twilioHandler);
+exports.handler = withVerifyTwilio(twilioHandler);

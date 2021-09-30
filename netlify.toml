@@ -13,11 +13,11 @@ to = "/.netlify/functions/webhooks_twilio_rs"
 status = 200
 
 [functions]
-node_bundler = "esbuild"
+#node_bundler = "esbuild"
 # external_node_modules = ["pg"]
-external_node_modules = ["electron", "playwright-core", "lambdafs"]
+#external_node_modules = ["electron", "playwright-core", "lambdafs"]
 # included_files = ["netlify/certs/*"]
-included_files = ["netlify/functions/shout-out-image/image.js"]
+#included_files = ["netlify/functions/shout-out-image/image.js"]
 
 [template.environment]
 PGHOST = "Database Host"
