@@ -91,7 +91,7 @@ async function twilioHandler(event, _context) {
   await browser.close();
 
   const cloudinaryResult = await cloudinaryPromise(screenshotBuffer, {
-    publlic_id: `serverless-talk/${userId}`
+    public_id: `serverless-talk/${userId}`
   });
 
   const twiml = new Twilio.twiml.MessagingResponse();
