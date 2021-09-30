@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const url = `https://api.github.com/users`;
 
-const getUserData = async function (username) {
+exports.getUserData = async function (username) {
   const userData = await fetch(`${url}/${username}`)
     .then((res) => res.json())
     .then((json) => {
@@ -14,5 +14,3 @@ const getUserData = async function (username) {
 
   return userData;
 };
-
-module.exports = getUserData;

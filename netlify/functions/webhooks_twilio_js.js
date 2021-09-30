@@ -10,8 +10,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const withVerifyTwilio = require("../lib/withVerifyTwilio");
-const getUserData = require("../lib/getUserData");
+const { withVerifyTwilio } = require("../lib/withVerifyTwilio");
+const { getUserData } = require("../lib/getUserData");
 
 const script = fs.readFileSync(
   path.resolve(__dirname, "./shout-out-image/image.js"),

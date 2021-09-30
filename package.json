@@ -10,9 +10,9 @@
   "dependencies": {
     "cloudinary": "^1.27.0",
     "next": "^11.1.1",
-    "node-fetch": "^3.0.0",
-    "playwright-aws-lambda": "^0.7.0",
-    "playwright-core": "^1.15.0",
+    "node-fetch": "^2.6.2",
+    "playwright-aws-lambda": "^0.4.0",
+    "playwright-core": "^0.11.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "twilio": "^3.68.0"

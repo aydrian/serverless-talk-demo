@@ -3,7 +3,7 @@ const { URLSearchParams } = require("url");
 
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 
-const withVerifyTwilio = (handler) => {
+exports.withVerifyTwilio = (handler) => {
   return async (event, context) => {
     if (event.httpMethod !== "POST") {
       return {
@@ -34,5 +34,3 @@ const withVerifyTwilio = (handler) => {
     return handler({ ...event, parsedBody }, context);
   };
 };
-
-module.exports = withVerifyTwilio;
