@@ -1,37 +1,103 @@
 import Twilio from "twilio";
-import { URLSearchParams } from "url";
+import playwright from "playwright-aws-lambda";
+import fs from "fs";
+import path from "path";
 
-const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-export async function handler(event, _context) {
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      headers: { Allow: "POST" },
-      body: "Method Not Allowed"
-    };
+import withVerifyTwilio from "../lib/withVerifyTwilio";
+import getUserData from "../lib/getUserData";
+
+const script = fs.readFileSync(
+  path.resolve(__dirname, "./shout-out-image/image.js"),
+  "utf-8"
+);
+
+async function twilioHandler(event, _context) {
+  const { parsedBody } = event;
+  console.log(parsedBody);
+
+  const userId = parsedBody.Body.trim();
+  const userData = await getUserData(userId);
+  console.log(userData);
+
+  const browser = await playwright.launchChromium();
+  const context = await browser._defaultContext;
+  const page = await context.newPage();
+
+  page.setViewportSize({
+    width: 1200,
+    height: 630
+  });
+
+  await page.setContent(`<!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <link
+        href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700,800,900&display=swap"
+        rel="stylesheet"
+      />
+      <link rel="preload" href="${
+        userData ? userData.image : ""
+      }" as="image" media="(max-width: 600px)" />
+    </head>
+    <body>
+      <div id="app">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            text-align: center;
+            font-size: 72px;
+            font-weight: 900;
+            line-height: 96px;
+            font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial,
+              sans-serif;
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+          "
+        >
+          Thanks for coming to my talk!
+        </div>
+      </div>
+    </body>
+  </html>
+  `);
+
+  if (userData) {
+    await page.addScriptTag({
+      content: `
+      window.image = "${userData.image}";
+      window.username = "${userData.username}";
+    `
+    });
+    await page.addScriptTag({ content: script });
   }
 
-  const twilioSignature = event.headers["x-twilio-signature"];
-  const body = Object.fromEntries(new URLSearchParams(event.body));
-  console.log(twilioSignature);
-  if (
-    !Twilio.validateRequest(
-      twilioAuthToken,
-      twilioSignature,
-      "https://serverless-talk-demo.netlify.app/webhooks/twilio",
-      body
-    )
-  ) {
-    console.log("Signature verification failed.");
-    return {
-      statusCode: 422,
-      body: "Signature verification failed."
-    };
-  }
+  const boundingRect = await page.evaluate(() => {
+    const app = document.getElementById("app");
+    const { x, y, width, height } = app.children[0].getBoundingClientRect();
+    return { x, y, width, height };
+  });
+
+  const screenshotBuffer = await page.screenshot({ clip: boundingRect });
+  await browser.close();
+
+  const cloudinaryResult = await cloudinaryPromise(screenshotBuffer, {
+    publlic_id: `serverless-talk/${userId}`
+  });
 
   const twiml = new Twilio.twiml.MessagingResponse();
-  twiml.message("Response from javascript");
+  const message = twiml.message();
+  message.body("Response from javascript");
+  message.media(cloudinaryResult.secure_url);
 
   return {
     statusCode: 200,
@@ -41,3 +107,19 @@ export async function handler(event, _context) {
     body: twiml.toString()
   };
 }
+
+function cloudinaryPromise(shotResult, cloudinary_options) {
+  return new Promise(function (res, rej) {
+    cloudinary.uploader
+      .upload_stream(cloudinary_options, function (error, cloudinary_result) {
+        if (error) {
+          console.error("Upload to cloudinary failed: ", error);
+          rej(error);
+        }
+        res(cloudinary_result);
+      })
+      .end(shotResult);
+  });
+}
+
+export const handler = withVerifyTwilio(twilioHandler);
