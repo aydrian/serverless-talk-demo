@@ -15,6 +15,7 @@ status = 200
 [functions]
 node_bundler = "esbuild"
 # external_node_modules = ["pg"]
+external_node_modules = ["electron", "appIcon.png"]
 # included_files = ["netlify/certs/*"]
 
 [template.environment]
