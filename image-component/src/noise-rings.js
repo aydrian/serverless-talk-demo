@@ -47,7 +47,6 @@ export const NoiseRings = ({
       </defs>
       <g
         strokeLinecap="round"
-        strokeLinecap="round"
         strokeWidth={`${strokeWidth}px`}
         fill="none"
         stroke="url(#paint0_linear)"

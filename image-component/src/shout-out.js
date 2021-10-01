@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { CockroachLabsLogo } from "./cockroachlabs-logo";
 import { NoiseRings } from "./noise-rings";
 
 const Background = styled(NoiseRings)`
@@ -55,6 +56,12 @@ const User = ({ image, username }) => (
   </div>
 );
 
+const StyledCockroachLabsLogo = styled(CockroachLabsLogo)`
+  position: absolute;
+  left: 64px;
+  bottom: 36px;
+`;
+
 const Message = styled.div`
   display: flex;
   align-items: flex-start;
@@ -72,5 +79,6 @@ export const ShoutOut = ({ image, username }) => (
       <Title>Thanks for coming to my talk!</Title>
       <User image={image} username={username} />
     </Message>
+    <StyledCockroachLabsLogo />
   </Card>
 );
