@@ -47,7 +47,7 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
 
 fn parse_twilio_event(event: Value) -> (bool, BTreeMap<String, String>) {
     let auth_token = std::env::var("TWILIO_AUTH_TOKEN").expect("TWILIO_AUTH_TOKEN was not set");
-    let twilio_signature = event["headers"]["X-Twilio-Signature"].as_str().unwrap();
+    let twilio_signature = event["headers"]["x-twilio-signature"].as_str().unwrap();
     println!("twilio signature: {}", twilio_signature);
     let post_args: BTreeMap<String, String> =
         url::form_urlencoded::parse(event["body"].as_str().unwrap().as_bytes())
