@@ -1,5 +1,5 @@
 use http::StatusCode;
-use image::{DynamicImage, EncodableLayout, ImageOutputFormat};
+use image::{DynamicImage, ImageOutputFormat};
 use lambda_runtime::{handler_fn, Context, Error};
 use og_image_writer::{style, writer::OGImageWriter};
 use serde::Deserialize;
