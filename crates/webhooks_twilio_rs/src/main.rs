@@ -34,7 +34,10 @@ async fn handler(event: Event, _: Context) -> Result<Value, Error> {
     println!("{:?}", parsed_body);
     let client = reqwest::Client::new();
     let res = client
-        .get(format!("https://api.github.com/users/{}", "aydrian"))
+        .get(format!(
+            "https://api.github.com/users/{}",
+            parsed_body.get("Body").unwrap()
+        ))
         .header(reqwest::header::USER_AGENT, "rust-reqwest")
         .send()
         .await
