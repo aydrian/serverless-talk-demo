@@ -65,7 +65,7 @@ fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
         font,
     )?;
 
-    writer.set_img(
+    /*writer.set_img(
         &github_user.avatar_url,
         280,
         280,
@@ -74,7 +74,7 @@ fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
             border_radius: style::BorderRadius(100, 100, 100, 100),
             ..style::Style::default()
         },
-    )?;
+    )?;*/
     writer.paint()?;
 
     let img = writer.image()?;
