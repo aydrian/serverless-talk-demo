@@ -27,7 +27,7 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     let username = parsed_body.get("Body").unwrap().trim();
     println!("username: {}", username);
     let media_url = format!(
-        "https://serverless-talk-demo.netlify.app/.netlify/functions/generate_image?username={}",
+        "https://app.netlify.com/sites/serverless-talk-demo/functions/generate_image_rs?username={}",
         username
     );
 
