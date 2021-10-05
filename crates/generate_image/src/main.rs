@@ -1,5 +1,5 @@
 use http::StatusCode;
-use image::{DynamicImage, ImageOutputFormat};
+use image::{DynamicImage, EncodableLayout, ImageOutputFormat};
 use lambda_runtime::{handler_fn, Context, Error};
 use og_image_writer::{style, writer::OGImageWriter};
 use serde::Deserialize;
@@ -75,6 +75,17 @@ fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
             ..style::Style::default()
         },
     )?;*/
+    let body = reqwest::blocking::get(github_user.avatar_url)?.bytes()?;
+    writer.set_img_with_data(
+        body.as_ref(),
+        280,
+        280,
+        style::Style {
+            margin: style::Margin(0, 0, 34, 0),
+            border_radius: style::BorderRadius(100, 100, 100, 100),
+            ..style::Style::default()
+        },
+    )?;
     writer.paint()?;
 
     let img = writer.image()?;
