@@ -17,10 +17,10 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     let (verified, parsed_body) = parse_twilio_event(event);
     if !verified {
         println!("Signature verification failed.");
-        return Ok(json!({
+        /*return Ok(json!({
             "statusCode": StatusCode::UNPROCESSABLE_ENTITY.as_u16(),
             "body": "Signature verification failed."
-        }));
+        }));*/
     }
 
     println!("parsed body: {:?}", parsed_body);
