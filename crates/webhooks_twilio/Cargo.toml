@@ -1,5 +1,5 @@
 [package]
-name = "webhooks_twilio_rs"
+name = "webhooks_twilio"
 version = "0.1.0"
 edition = "2018"
 
@@ -11,9 +11,5 @@ tokio = { version = "1.11.0", features = ["full"] }
 lambda_runtime = "0.4.1"
 serde_json = "1.0.67"
 http = "0.2.4"
-reqwest = { version = "0.11.4", default-features = false, features = [
-  "json",
-  "rustls-tls",
-] }
 rust-crypto = "0.2"
 url = "2.0.0"
