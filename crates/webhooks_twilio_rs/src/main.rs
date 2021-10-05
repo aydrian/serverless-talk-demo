@@ -1,27 +1,62 @@
 // use crypto::hmac::Hmac;
 // use crypto::mac::{Mac, MacResult};
 // use crypto::sha1::Sha1;
-use lamedh_http::{
-    http::StatusCode,
-    lambda::{lambda, Context, Error},
-    IntoResponse, Request, Response,
-};
-// use std::collections::BTreeMap;
+use http::StatusCode;
+use lambda_runtime::{handler_fn, Context, Error};
+use serde::Deserialize;
+use serde_json::{json, Value};
+use std::collections::BTreeMap;
 
-#[lambda(http)]
+#[derive(Deserialize)]
+struct Event {
+    body: String,
+}
+
+#[derive(Deserialize)]
+struct GitHubUser {
+    login: String,
+    //id: u32,
+    //name: String,
+    avatar_url: String,
+}
+
 #[tokio::main]
-async fn main(_request: Request, _: Context) -> Result<impl IntoResponse, Error> {
+async fn main() -> Result<(), Error> {
+    let handler_fn = handler_fn(handler);
+    lambda_runtime::run(handler_fn).await?;
+    Ok(())
+}
+
+async fn handler(event: Event, _: Context) -> Result<Value, Error> {
+    let parsed_body: BTreeMap<String, String> = url::form_urlencoded::parse(event.body.as_bytes())
+        .into_owned()
+        .collect();
+    println!("{:?}", parsed_body);
+    let client = reqwest::Client::new();
+    let res = client
+        .get(format!("https://api.github.com/users/{}", "aydrian"))
+        .header(reqwest::header::USER_AGENT, "rust-reqwest")
+        .send()
+        .await
+        .unwrap()
+        .json::<GitHubUser>()
+        .await
+        .unwrap();
+    println!("{}: {}", &res.login, &res.avatar_url);
+
     // TODO: Verify signature
     let twiml = format!(
-        "<Response><Message><Body>{}</Body></Message></Response>",
-        "Response from rust"
+        "<Response><Message><Body>Hello {} Response from rust</Body><Media>{}</Media></Message></Response>",
+        res.login, res.avatar_url
     );
 
-    Ok(Response::builder()
-        .status(StatusCode::OK)
-        .header("Content-Type", "text/xml")
-        .body(twiml)
-        .unwrap())
+    Ok(json!({
+        "statusCode": StatusCode::OK.as_u16(),
+        "headers": {
+            "Content-Type": "text/xml",
+        },
+        "body": twiml
+    }))
 }
 
 /*fn verifyTwilioRequest(req: Request) -> bool {
