@@ -61,6 +61,7 @@ fn parse_twilio_event(event: Value) -> (bool, BTreeMap<String, String>) {
         "https://serverless-talk-demo.netlify.app/.netlify/functions/webhooks_twilio_rs{}",
         append
     );
+    println!("{}", effective_uri);
     let mut hmac = Hmac::new(Sha1::new(), auth_token.as_bytes());
     hmac.input(effective_uri.as_bytes());
     let result = hmac.result();
