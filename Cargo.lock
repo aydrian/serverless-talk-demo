@@ -1630,6 +1630,7 @@ dependencies = [
 name = "webhooks_twilio"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "http",
  "lambda_runtime",
  "rust-crypto",

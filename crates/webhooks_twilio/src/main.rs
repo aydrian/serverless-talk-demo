@@ -65,6 +65,6 @@ fn parse_twilio_event(event: Value) -> (bool, BTreeMap<String, String>) {
     let mut hmac = Hmac::new(Sha1::new(), auth_token.as_bytes());
     hmac.input(effective_uri.as_bytes());
     let result = hmac.result();
-    let expected = MacResult::new(twilio_signature.as_bytes());
+    let expected = MacResult::new(&base64::decode(twilio_signature.as_bytes()).unwrap());
     (result == expected, post_args)
 }
