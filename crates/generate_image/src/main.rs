@@ -5,6 +5,9 @@ use og_image_writer::{style, writer::OGImageWriter};
 use serde::Deserialize;
 use serde_json::{json, Value};
 
+// const WIDTH: u32 = 1280;
+// const HEIGHT: u32 = 1280;
+
 #[derive(Deserialize)]
 struct GitHubUser {
     login: String,
@@ -39,17 +42,55 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
 async fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
     let text = format!("Thanks for coming to my talk, {}!", github_user.login);
 
-    let mut writer = OGImageWriter::new(style::WindowStyle {
-        width: 1200,
-        height: 630,
+    let mut writer = OGImageWriter::from_data(
+        style::WindowStyle {
+            align_items: style::AlignItems::Center,
+            justify_content: style::JustifyContent::Center,
+            ..style::WindowStyle::default()
+        },
+        include_bytes!("../background.png"),
+    ).unwrap();
+
+    /*let mut writer = OGImageWriter::new(style::WindowStyle {
+        width: WIDTH,
+        height: HEIGHT,
         background_color: Some(style::Rgba([70, 40, 90, 255])),
         align_items: style::AlignItems::Center,
         justify_content: style::JustifyContent::Center,
         ..style::WindowStyle::default()
     })
-    .unwrap();
+    .unwrap();*/
 
     let font = Vec::from(include_bytes!("../FiraSans-Bold.ttf") as &[u8]);
+
+    let crl_logo = Vec::from(include_bytes!("../logo.png") as &[u8]);
+
+    let mut logo_container = OGImageWriter::new(style::WindowStyle {
+        width: 475,
+        height: 67,
+        background_color: Some(style::Rgba([223, 246, 245, 0])),
+        align_items: style::AlignItems::Start,
+        justify_content: style::JustifyContent::Center,
+        ..style::WindowStyle::default()
+    })?;
+    logo_container.set_img_with_data(
+        &crl_logo,
+        475,
+        67,
+        style::Style {
+            margin: style::Margin(0, 0, 0, 0),
+            ..Default::default()
+        },
+    )?;
+    writer.set_container(
+        &mut logo_container,
+        style::Style {
+            margin: style::Margin(1165, 0, 0, 60),
+            text_align: style::TextAlign::Center,
+            position: style::Position::Absolute,
+            ..style::Style::default()
+        },
+    )?;
 
     writer.set_text(
         &text,
