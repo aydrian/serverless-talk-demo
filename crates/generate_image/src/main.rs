@@ -23,7 +23,7 @@ async fn main() -> Result<(), Error> {
 async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     let username = event["queryStringParameters"]["username"].as_str().unwrap();
     let github_user = get_github_user(username).await?;
-    let encoded_data = gen_image(github_user)?;
+    let encoded_data = gen_image(github_user).await?;
 
     Ok(json!({
         "headers": {
@@ -36,7 +36,7 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     }))
 }
 
-fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
+async fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
     let text = format!("Thanks for coming to my talk, {}!", github_user.login);
 
     let mut writer = OGImageWriter::new(style::WindowStyle {
@@ -75,9 +75,9 @@ fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
             ..style::Style::default()
         },
     )?;*/
-    let body = reqwest::blocking::get(github_user.avatar_url)?.bytes()?;
+    let avatar_data = reqwest::get(github_user.avatar_url).await?.bytes().await?;
     writer.set_img_with_data(
-        body.as_ref(),
+        avatar_data.as_ref(),
         280,
         280,
         style::Style {
@@ -106,4 +106,20 @@ async fn get_github_user(username: &str) -> Result<GitHubUser, Error> {
         .json::<GitHubUser>()
         .await?;
     Ok(res)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn generates_image() {
+        /*let github_user: GitHubUser = GitHubUser{
+            login: String::from("aydrian"),
+            avatar_url: String::from("https://avatars.githubusercontent.com/u/981130?v=4")
+        };*/
+        let github_user = get_github_user("rainleander").await.unwrap();
+        let image = gen_image(github_user).await.unwrap();
+        std::fs::write("./test-file.png", image).unwrap()
+    }
 }
