@@ -11,8 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "canvas-sketch-util": "^1.10.0",
-    "marchingsquares": "^1.3.3",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-textfit": "^1.1.0",

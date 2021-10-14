@@ -19,8 +19,8 @@ exports.handler = async function (event, _context) {
   const page = await context.newPage();
 
   page.setViewportSize({
-    width: 1200,
-    height: 630
+    width: 1280,
+    height: 1280
   });
 
   await page.setContent(`<!DOCTYPE html>
@@ -28,7 +28,7 @@ exports.handler = async function (event, _context) {
     <head>
       <meta charset="utf-8" />
       <link
-        href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700,800,900&display=swap"
+        href="https://fonts.googleapis.com/css?family=Fira+Sans:400,700,800,900&display=swap"
         rel="stylesheet"
       />
       <link rel="preload" href="${
@@ -45,10 +45,10 @@ exports.handler = async function (event, _context) {
             font-size: 72px;
             font-weight: 900;
             line-height: 96px;
-            font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial,
+            font-family: 'Fira Sans', 'Helvetica Neue', Helvetica, Arial,
               sans-serif;
-            width: 1200px;
-            height: 630px;
+            width: 1280px;
+            height: 1280px;
             overflow: hidden;
           "
         >

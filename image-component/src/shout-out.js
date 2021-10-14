@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { CockroachLabsLogo } from "./cockroachlabs-logo";
-import { NoiseRings } from "./noise-rings";
+import { AtoLogo } from "./ato-logo";
+import { TwitterLogo } from "./twitter-logo";
 
-const Background = styled(NoiseRings)`
+const Background = styled.div`
   display: block;
   position: absolute;
   top: 0;
@@ -11,74 +12,118 @@ const Background = styled(NoiseRings)`
   bottom: 0;
   left: 0;
   z-index: -1;
-  background-color: #2a0481;
+  background: linear-gradient(
+    113.48deg,
+    #190f33 24.1%,
+    #0037a5 52.79%,
+    #6933ff 75.42%
+  );
 `;
 
 const Card = styled.div`
-  width: 1200px;
-  height: 630px;
+  width: 1280px;
+  height: 1280px;
   overflow: hidden;
-  font-family: "Nunito Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Fira Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   position: relative;
 `;
 
-const Title = styled.h1`
+const Title = styled.div`
+  font-style: normal;
+  font-weight: bold;
   font-size: 72px;
-  font-weight: 900;
-  line-height: 96px;
-  letter-spacing: -0.5px;
+  line-height: 86px;
   color: #fff;
-  width: 570px;
+  position: absolute;
+  width: 786px;
+  left: 56px;
+  top: 54px;
   margin: 0;
 `;
 
 const UserImage = styled.img`
-  width: 280px;
-  height: 280px;
+  width: 375px;
+  height: 375px;
   border-radius: 100%;
-  margin-bottom: 34px;
+  position: absolute;
+  top: 450px;
+  left: 452px;
 `;
 
-const Username = styled.div`
-  font-size: 32px;
+const Phrase = styled.div`
   font-style: normal;
-  font-weight: 700;
-  line-height: 36px;
-  letter-spacing: -0.17px;
   text-align: center;
   color: #fff;
+  font-weight: bold;
+  font-size: 96px;
+  line-height: 115px;
+  position: absolute;
+  width: 1050px;
+  height: 230px;
+  left: 104px;
+  top: 876px;
 `;
 
-const User = ({ image, username }) => (
-  <div>
-    <UserImage src={image} />
-    <Username>{username}</Username>
-  </div>
-);
+const User = ({ image, username }) => {
+  const phrases = ["Does this work", "Is this right", "Was this fast"];
+  return (
+    <div>
+      <UserImage src={image} />
+      <Phrase>
+        {phrases[Math.floor(Math.random() * phrases.length)]}, {username}?
+      </Phrase>
+    </div>
+  );
+};
 
 const StyledCockroachLabsLogo = styled(CockroachLabsLogo)`
   position: absolute;
-  left: 64px;
-  bottom: 36px;
+  top: 1165px;
+  left: 56px;
+  width: 475px;
+  height: 67px;
 `;
 
-const Message = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding-left: 64px;
-  padding-right: 126px;
-  margin-top: 155px;
-  margin-bottom: 125px;
+const StyledAtoLogo = styled(AtoLogo)`
+  position: absolute;
+  width: 279px;
+  height: 279px;
+  left: 973px;
+  top: 0px;
+`;
+
+const StyledTwitterLogo = styled(TwitterLogo)`
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  left: 868px;
+  top: 1164px;
+`;
+
+const TwitterHandle = styled.div`
+  position: absolute;
+  width: 270px;
+  height: 58px;
+  left: 947px;
+  top: 1170px;
+
+  font-family: Fira Sans;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 48px;
+  line-height: 58px;
+  color: #ffffff;
 `;
 
 export const ShoutOut = ({ image, username }) => (
   <Card>
-    <Background width={1200} height={630} strokeWidth={8} seed={username} />
-    <Message>
-      <Title>Thanks for coming to my talk!</Title>
-      <User image={image} username={username} />
-    </Message>
+    <Background width={1280} height={1280} strokeWidth={8} seed={username} />
+    <StyledAtoLogo />
+    <Title>Shorten the time between 'make it work' and 'make it fast'</Title>
+    <User image={image} username={username} />
+
     <StyledCockroachLabsLogo />
+    <StyledTwitterLogo />
+    <TwitterHandle>@itsaydrian</TwitterHandle>
   </Card>
 );

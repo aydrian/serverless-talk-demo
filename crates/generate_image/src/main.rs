@@ -6,9 +6,6 @@ use rand::seq::SliceRandom;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-// const WIDTH: u32 = 1280;
-// const HEIGHT: u32 = 1280;
-
 #[derive(Deserialize)]
 struct GitHubUser {
     login: String,
