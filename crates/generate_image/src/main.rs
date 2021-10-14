@@ -2,6 +2,7 @@ use http::StatusCode;
 use image::{DynamicImage, ImageOutputFormat};
 use lambda_runtime::{handler_fn, Context, Error};
 use og_image_writer::{style, writer::OGImageWriter};
+use rand::seq::SliceRandom;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -40,8 +41,6 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
 }
 
 async fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
-    let text = format!("Thanks for coming to my talk, {}!", github_user.login);
-
     let mut writer = OGImageWriter::from_data(
         style::WindowStyle {
             align_items: style::AlignItems::Center,
@@ -49,84 +48,56 @@ async fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
             ..style::WindowStyle::default()
         },
         include_bytes!("../background.png"),
-    ).unwrap();
-
-    /*let mut writer = OGImageWriter::new(style::WindowStyle {
-        width: WIDTH,
-        height: HEIGHT,
-        background_color: Some(style::Rgba([70, 40, 90, 255])),
-        align_items: style::AlignItems::Center,
-        justify_content: style::JustifyContent::Center,
-        ..style::WindowStyle::default()
-    })
-    .unwrap();*/
+    )
+    .unwrap();
 
     let font = Vec::from(include_bytes!("../FiraSans-Bold.ttf") as &[u8]);
 
-    let crl_logo = Vec::from(include_bytes!("../logo.png") as &[u8]);
+    let border_radius = 375 / 2 as u32;
 
-    let mut logo_container = OGImageWriter::new(style::WindowStyle {
-        width: 475,
-        height: 67,
-        background_color: Some(style::Rgba([223, 246, 245, 0])),
-        align_items: style::AlignItems::Start,
-        justify_content: style::JustifyContent::Center,
-        ..style::WindowStyle::default()
-    })?;
-    logo_container.set_img_with_data(
-        &crl_logo,
-        475,
-        67,
+    let avatar_data = reqwest::get(github_user.avatar_url).await?.bytes().await?;
+    writer.set_img_with_data(
+        avatar_data.as_ref(),
+        375,
+        375,
         style::Style {
-            margin: style::Margin(0, 0, 0, 0),
-            ..Default::default()
-        },
-    )?;
-    writer.set_container(
-        &mut logo_container,
-        style::Style {
-            margin: style::Margin(1165, 0, 0, 60),
-            text_align: style::TextAlign::Center,
+            border_radius: style::BorderRadius(
+                border_radius,
+                border_radius,
+                border_radius,
+                border_radius,
+            ),
             position: style::Position::Absolute,
+            top: Some(450),
+            left: Some(452),
             ..style::Style::default()
         },
     )?;
 
+    let phrases = vec!["Does this work", "Is this right", "Was this fast"];
+    let text = format!(
+        "{}, @{}?",
+        phrases
+            .choose(&mut rand::thread_rng())
+            .unwrap_or(&phrases[0]),
+        github_user.login
+    );
+
     writer.set_text(
         &text,
         style::Style {
-            margin: style::Margin(0, 20, 0, 20),
-            line_height: 1.8,
-            font_size: 100.,
+            position: style::Position::Absolute,
+            top: Some(876),
+            line_height: 2.5,
+            font_size: 96.,
             word_break: style::WordBreak::Normal,
             color: style::Rgba([255, 255, 255, 255]),
-            text_align: style::TextAlign::Start,
+            text_align: style::TextAlign::Center,
             ..style::Style::default()
         },
         font,
     )?;
 
-    /*writer.set_img(
-        &github_user.avatar_url,
-        280,
-        280,
-        style::Style {
-            margin: style::Margin(0, 0, 34, 0),
-            border_radius: style::BorderRadius(100, 100, 100, 100),
-            ..style::Style::default()
-        },
-    )?;*/
-    let avatar_data = reqwest::get(github_user.avatar_url).await?.bytes().await?;
-    writer.set_img_with_data(
-        avatar_data.as_ref(),
-        280,
-        280,
-        style::Style {
-            margin: style::Margin(0, 0, 34, 0),
-            border_radius: style::BorderRadius(100, 100, 100, 100),
-            ..style::Style::default()
-        },
-    )?;
     writer.paint()?;
 
     let img = writer.image()?;
@@ -155,11 +126,7 @@ mod tests {
 
     #[tokio::test]
     async fn generates_image() {
-        /*let github_user: GitHubUser = GitHubUser{
-            login: String::from("aydrian"),
-            avatar_url: String::from("https://avatars.githubusercontent.com/u/981130?v=4")
-        };*/
-        let github_user = get_github_user("rainleander").await.unwrap();
+        let github_user = get_github_user("ChristopherBiscardi").await.unwrap();
         let image = gen_image(github_user).await.unwrap();
         std::fs::write("./test-file.png", image).unwrap()
     }
