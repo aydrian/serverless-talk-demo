@@ -10,7 +10,7 @@ async function twilioHandler(event, _context) {
 
   const twiml = new Twilio.twiml.MessagingResponse();
   const message = twiml.message();
-  message.body("Response from javascript");
+  message.body("JavaScript Function Response");
   message.media(
     `https://serverless-talk-demo.netlify.app/generate/image?username=${username}`
   );

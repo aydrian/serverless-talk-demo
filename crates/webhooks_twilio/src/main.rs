@@ -27,12 +27,12 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     let username = parsed_body.get("Body").unwrap().trim();
     println!("username: {}", username);
     let media_url = format!(
-        "https://serverless-talk-demo.netlify.app/.netlify/functions/generate_image_rs?username={}",
+        "https://serverless-talk-demo.netlify.app/generate/image?username={}",
         username
     );
 
     let twiml = format!(
-        "<Response><Message><Body>Hello {} Response from rust</Body><Media>{}</Media></Message></Response>",
+        "<Response><Message><Body>Hello {}\nRust Function Response</Body><Media>{}</Media></Message></Response>",
         username, media_url
     );
 
