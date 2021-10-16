@@ -86,10 +86,10 @@ const StyledCockroachLabsLogo = styled(CockroachLabsLogo)`
 
 const StyledAtoLogo = styled(AtoLogo)`
   position: absolute;
-  width: 279px;
-  height: 279px;
-  left: 973px;
-  top: 0px;
+  width: 223px;
+  height: 159px;
+  left: 1001px;
+  top: 60px;
 `;
 
 const StyledTwitterLogo = styled(TwitterLogo)`
