@@ -58,7 +58,7 @@ fn parse_twilio_event(event: Value) -> (bool, BTreeMap<String, String>) {
         .map(|(k, v)| format!("{}{}", k, v))
         .collect();
     let effective_uri = format!(
-        "https://serverless-talk-demo.netlify.app/.netlify/functions/webhooks_twilio_rs{}",
+        "https://serverless-talk-demo.netlify.app/webhooks/twilio{}",
         append
     );
     println!("effective uri: {}", effective_uri);
