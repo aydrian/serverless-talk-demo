@@ -1,10 +1,11 @@
-use http::StatusCode;
+use aws_lambda_events::encodings::Body;
+use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use http::HeaderMap;
 use image::{DynamicImage, ImageOutputFormat};
 use lambda_runtime::{handler_fn, Context, Error};
 use og_image_writer::{style, writer::OGImageWriter};
 use rand::seq::SliceRandom;
 use serde::Deserialize;
-use serde_json::{json, Value};
 
 #[derive(Deserialize)]
 struct GitHubUser {
@@ -21,20 +22,32 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn handler(event: Value, _: Context) -> Result<Value, Error> {
-    let username = event["queryStringParameters"]["username"].as_str().unwrap();
+async fn handler(
+    event: ApiGatewayProxyRequest,
+    _: Context,
+) -> Result<ApiGatewayProxyResponse, Error> {
+    let username = event
+        .query_string_parameters
+        .get("username")
+        .unwrap()
+        .as_str();
     let github_user = get_github_user(username).await?;
     let encoded_data = gen_image(github_user).await?;
 
-    Ok(json!({
-        "headers": {
-            "Content-Type": "image/png",
-            "Content-Length": encoded_data.len().to_string()
-        },
-        "statusCode": StatusCode::OK.as_u16(),
-        "body": base64::encode(encoded_data),
-        "isBase64Encoded": true
-    }))
+    let mut headers = HeaderMap::new();
+    headers.insert(http::header::CONTENT_TYPE, "image/png".parse().unwrap());
+    headers.insert(
+        http::header::CONTENT_LENGTH,
+        encoded_data.len().to_string().parse().unwrap(),
+    );
+
+    Ok(ApiGatewayProxyResponse {
+        status_code: 200,
+        headers,
+        multi_value_headers: HeaderMap::new(),
+        body: Some(Body::Text(base64::encode(encoded_data))),
+        is_base64_encoded: Some(true),
+    })
 }
 
 async fn gen_image(github_user: GitHubUser) -> Result<Vec<u8>, Error> {
