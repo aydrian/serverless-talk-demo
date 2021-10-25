@@ -2,20 +2,20 @@
 command = "make build && npm run build"
 publish = "out"
 
-# [[redirects]]
-# from = "/webhooks/twilio"
-# to = "/.netlify/functions/webhooks_twilio_js"
-# status = 200
+[[redirects]]
+from = "/webhooks/twilio"
+to = "/.netlify/functions/webhooks_twilio_js"
+status = 200
 
 # [[redirects]]
 # from = "/generate/image"
 # to = "/.netlify/functions/generate_image_js"
 # status = 200
 
-[[redirects]]
-from = "/webhooks/twilio"
-to = "/.netlify/functions/webhooks_twilio_rs"
-status = 200
+# [[redirects]]
+# from = "/webhooks/twilio"
+# to = "/.netlify/functions/webhooks_twilio_rs"
+# status = 200
 
 [[redirects]]
 from = "/generate/image"
@@ -23,8 +23,10 @@ to = "/.netlify/functions/generate_image_rs"
 status = 200
 
 [functions]
-# included_files = ["netlify/certs/*"]
-included_files = ["netlify/functions/shout-out-image/image.js"]
+included_files = [
+  "netlify/functions/shout-out-image/image.js",
+  "netlify/certs/*",
+]
 
 [template.environment]
 PGHOST = "Database Host"
