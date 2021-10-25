@@ -1,9 +1,10 @@
+use aws_lambda_events::encodings::Body;
+use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use crypto::hmac::Hmac;
 use crypto::mac::{Mac, MacResult};
 use crypto::sha1::Sha1;
-use http::StatusCode;
+use http::header::HeaderMap;
 use lambda_runtime::{handler_fn, Context, Error};
-use serde_json::{json, Value};
 use std::collections::BTreeMap;
 
 #[tokio::main]
@@ -13,14 +14,20 @@ async fn main() -> Result<(), Error> {
     Ok(())
 }
 
-async fn handler(event: Value, _: Context) -> Result<Value, Error> {
+async fn handler(
+    event: ApiGatewayProxyRequest,
+    _: Context,
+) -> Result<ApiGatewayProxyResponse, Error> {
     let (verified, parsed_body) = parse_twilio_event(event);
     if !verified {
         println!("Signature verification failed.");
-        return Ok(json!({
-            "statusCode": StatusCode::UNPROCESSABLE_ENTITY.as_u16(),
-            "body": "Signature verification failed."
-        }));
+        return Ok(ApiGatewayProxyResponse {
+            status_code: 422,
+            headers: HeaderMap::new(),
+            multi_value_headers: HeaderMap::new(),
+            body: Some(Body::Text(String::from("Signature verification failed."))),
+            is_base64_encoded: Some(false),
+        });
     }
 
     println!("parsed body: {:?}", parsed_body);
@@ -36,21 +43,29 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
         username, media_url
     );
 
-    Ok(json!({
-        "statusCode": StatusCode::OK.as_u16(),
-        "headers": {
-            "Content-Type": "text/xml",
-        },
-        "body": twiml
-    }))
+    let mut headers = HeaderMap::new();
+    headers.insert(http::header::CONTENT_TYPE, "text/xml".parse().unwrap());
+
+    Ok(ApiGatewayProxyResponse {
+        status_code: 200,
+        headers,
+        multi_value_headers: HeaderMap::new(),
+        body: Some(Body::Text(twiml)),
+        is_base64_encoded: Some(false),
+    })
 }
 
-fn parse_twilio_event(event: Value) -> (bool, BTreeMap<String, String>) {
+fn parse_twilio_event(event: ApiGatewayProxyRequest) -> (bool, BTreeMap<String, String>) {
     let auth_token = std::env::var("TWILIO_AUTH_TOKEN").expect("TWILIO_AUTH_TOKEN was not set");
-    let twilio_signature = event["headers"]["x-twilio-signature"].as_str().unwrap();
+    let twilio_signature = event
+        .headers
+        .get("x-twilio-signature")
+        .unwrap()
+        .to_str()
+        .unwrap();
     println!("twilio signature: {}", twilio_signature);
     let post_args: BTreeMap<String, String> =
-        url::form_urlencoded::parse(event["body"].as_str().unwrap().as_bytes())
+        url::form_urlencoded::parse(event.body.unwrap().as_bytes())
             .into_owned()
             .collect();
     let append: String = post_args

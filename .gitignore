@@ -36,6 +36,3 @@ bins
 
 # Local Netlify folder
 .netlify
-
-# Local Rust Netlify Functions
-netlify/functions/*_rs
