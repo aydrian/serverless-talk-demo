@@ -7,6 +7,7 @@ use serde_json::{json, Value};
 use sqlx::postgres::PgPool;
 use std::collections::BTreeMap;
 use std::env;
+use std::fmt::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -37,8 +38,16 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
         "FromCity":from_city, "FromState": from_state, "FromZip": from_zip, "FromCountry": from_country
     });
 
-    if let Ok(ret) = add_message(username, location).await {
+    /*if let Ok(ret) = add_message(username, location).await {
         println!("Message added: {}", ret);
+    }*/
+    match add_message(username, location).await {
+        Ok(id) => {
+            dbg!(id);
+        }
+        Err(ex) => {
+            dbg!(ex);
+        }
     }
 
     let media_url = format!(
@@ -47,8 +56,8 @@ async fn handler(event: Value, _: Context) -> Result<Value, Error> {
     );
 
     let twiml = format!(
-        "<Response><Message><Body>Hello {}\nRust Function Response</Body><Media>{}</Media></Message></Response>",
-        username, media_url
+        "<Response><Message><Body>Rust Function Response</Body><Media>{}</Media></Message></Response>",
+        media_url
     );
 
     Ok(json!({
