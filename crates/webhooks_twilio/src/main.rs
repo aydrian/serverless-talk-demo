@@ -7,7 +7,6 @@ use serde_json::{json, Value};
 use sqlx::postgres::PgPool;
 use std::collections::BTreeMap;
 use std::env;
-use std::fmt::Error;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
