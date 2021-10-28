@@ -23,14 +23,7 @@ to = "/.netlify/functions/generate_image_rs"
 status = 200
 
 [functions]
-included_files = [
-  "netlify/functions/shout-out-image/image.js",
-  "netlify/certs/*",
-]
+included_files = ["netlify/functions/shout-out-image/image.js"]
 
 [template.environment]
-PGHOST = "Database Host"
-PGPORT = "Database Port"
-PGDATABASE = "Database name with Cluster"
-PGUSER = "Database SQL User"
-PGPASSWORD = "Database SQL User Password"
+DATABASE_URL = "Database Connection String"

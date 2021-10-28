@@ -4,18 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "prisma generate && next build && next export",
     "export": "next export"
   },
   "dependencies": {
+    "@prisma/client": "^3.3.0",
     "next": "^11.1.1",
     "node-fetch": "^2.6.2",
-    "pg": "^8.7.1",
-    "pg-format": "^1.0.4",
     "playwright-aws-lambda": "^0.4.0",
     "playwright-core": "^0.11.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "twilio": "^3.68.0"
+  },
+  "devDependencies": {
+    "prisma": "^3.3.0"
   }
 }

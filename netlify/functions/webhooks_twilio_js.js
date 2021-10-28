@@ -1,16 +1,8 @@
 const Twilio = require("twilio");
-const { Client } = require("pg");
-const format = require("pg-format");
-const fs = require("fs");
-const path = require("path");
+const { PrismaClient } = require("@prisma/client");
 
 const { withVerifyTwilio } = require("../lib/withVerifyTwilio");
-
-const client = new Client({
-  ssl: {
-    ca: fs.readFileSync(path.join(__dirname, "../certs/cc-ca.crt")).toString()
-  }
-});
+const prisma = new PrismaClient();
 
 async function twilioHandler(event, _context) {
   const { parsedBody } = event;
@@ -20,17 +12,17 @@ async function twilioHandler(event, _context) {
   const username = Body.trim();
 
   try {
-    await client.connect();
-    const sqlStatement = format(
-      "INSERT INTO messages (github_username, sms_location, function_used) VALUES (%L, %L, 'JavaScript');",
-      username,
-      { FromCity, FromState, FromZip, FromCountry }
-    );
-    await client.query(sqlStatement);
+    await prisma.message.create({
+      data: {
+        github_username: username,
+        sms_location: { FromCity, FromState, FromZip, FromCountry },
+        function_used: "JavaScript"
+      }
+    });
   } catch (ex) {
     console.log("Error inserting message", ex);
   } finally {
-    await client.end();
+    await prisma.$disconnect();
   }
 
   const twiml = new Twilio.twiml.MessagingResponse();
