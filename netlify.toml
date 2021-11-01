@@ -23,7 +23,10 @@ to = "/.netlify/functions/generate_image_rs"
 status = 200
 
 [functions]
-included_files = ["netlify/functions/shout-out-image/image.js"]
+included_files = [
+  "netlify/functions/certs/cc-ca.crt",
+  "netlify/functions/shout-out-image/image.js",
+]
 
 [template.environment]
 DATABASE_URL = "Database Connection String"
