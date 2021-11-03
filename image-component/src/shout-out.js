@@ -1,7 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { CockroachLabsLogo } from "./cockroachlabs-logo";
-import { AtoLogo } from "./ato-logo";
+// import { AtoLogo } from "./ato-logo";
+import { PrismaLogo } from "./prisma-logo";
 import { TwitterLogo } from "./twitter-logo";
 
 const Background = styled.div`
@@ -84,12 +85,20 @@ const StyledCockroachLabsLogo = styled(CockroachLabsLogo)`
   height: 67px;
 `;
 
-const StyledAtoLogo = styled(AtoLogo)`
+// const StyledAtoLogo = styled(AtoLogo)`
+//   position: absolute;
+//   width: 223px;
+//   height: 159px;
+//   left: 1001px;
+//   top: 60px;
+// `;
+
+const StyledPrismaLogo = styled(PrismaLogo)`
   position: absolute;
-  width: 223px;
-  height: 159px;
-  left: 1001px;
-  top: 60px;
+  width: 274px;
+  height: 190px;
+  left: 950px;
+  top: 44px;
 `;
 
 const StyledTwitterLogo = styled(TwitterLogo)`
@@ -118,7 +127,7 @@ const TwitterHandle = styled.div`
 export const ShoutOut = ({ image, username }) => (
   <Card>
     <Background width={1280} height={1280} strokeWidth={8} seed={username} />
-    <StyledAtoLogo />
+    <StyledPrismaLogo />
     <Title>Shorten the time between 'make it work' and 'make it fast'</Title>
     <User image={image} username={username} />
 
